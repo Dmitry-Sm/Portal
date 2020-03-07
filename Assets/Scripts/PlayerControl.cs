@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour
 {
     [SerializeField]
-    private Camera camera;
+    private Camera cam;
     [SerializeField]
     private CharacterController controller;
 
@@ -41,7 +41,7 @@ void Update()
         float pich = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
         rotation.x -= pich;
         rotation.x = Mathf.Clamp(rotation.x, -90, 90);
-        camera.transform.localEulerAngles = Vector3.right * rotation.x;
+        cam.transform.localEulerAngles = Vector3.right * rotation.x;
         transform.eulerAngles += Vector3.up * raw;
     }
 
