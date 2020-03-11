@@ -7,6 +7,8 @@ public class PortalCamera : MonoBehaviour
     [SerializeField]
     private Portal[] portals = new Portal[2];
     [SerializeField]
+    private Transform[] marks = new Transform[2];
+    [SerializeField]
     private Camera portalCamera;
 
     private Transform player;
@@ -59,12 +61,54 @@ public class PortalCamera : MonoBehaviour
         for (int i = 0; i < iterations; i++)
         {
             float dist = Vector3.Magnitude(pos[i] - outPortal.transform.position);
-            portalCamera.nearClipPlane = 1f + dist;
             portalCamera.transform.SetPositionAndRotation(pos[i], rot[i]);
+            
+            // Vector3 norm = portalCamera.transform.TransformDirection(Vector3.Normalize(outPortal.transform.forward));
+            // Vector3 point = portalCamera.transform.TransformPoint(pos[i] - outPortal.transform.position);
+            // Vector3 norm = new Vector3(0, 0, -1);
+            // Vector3 point = new Vector3(0, 0, -dist);
+            // norm = Vector3.Scale(norm, -Vector3.one);
+            // point = Vector3.Scale(point, -Vector3.one);
+            // Plane plane = new Plane(norm, point);
+            // Vector4 vplane = new Vector4(norm.x, norm.y, norm.z, plane.distance);
+
+            // outPortal.transform.position += outPortal.transform.forward * 0.01f;
+            Vector4 clipPlane = CalculateClipPlane(portalCamera, outPortal.transform);
+            // outPortal.transform.position -= outPortal.transform.forward * 0.01f;
+
+            if (i == iterations - 1) {
+                if (inPortal.name == "Portal 1") {
+                    marks[0].position = pos[i];
+                }
+                else {
+                    marks[1].position = pos[i];
+                }
+            }
+            portalCamera.projectionMatrix = portalCamera.CalculateObliqueMatrix(clipPlane);
             portalCamera.Render();
         }
     }
     
+    // https://qiita.com/tsgcpp/items/3816e4cf188db257df19
+    private static Vector4 CalculateClipPlane(Camera camera, Transform clip_plane_transform) 
+    {
+        Matrix4x4 world_to_camera_matrix = camera.worldToCameraMatrix;
+        Vector3 clip_plane_normal = world_to_camera_matrix.MultiplyVector(clip_plane_transform.forward);
+        Vector3 clip_plane_arbitary_position = world_to_camera_matrix.MultiplyPoint(clip_plane_transform.position);
+
+        return CalculateClipPlane(clip_plane_normal, clip_plane_arbitary_position);
+    }
+    
+
+    private static Vector4 CalculateClipPlane(Vector3 clip_plane_normal, Vector3 clip_plane_arbitary_position) 
+    {
+        float distance = -Vector3.Dot(clip_plane_normal, clip_plane_arbitary_position);
+        Vector4 clip_plane = new Vector4(clip_plane_normal.x, clip_plane_normal.y, clip_plane_normal.z, distance);
+
+        return clip_plane;
+    }
+    
+
     Transform RenderPortal(Portal inPortal, Portal outPortal, Transform looker)
     {
         Transform inTransform = inPortal.transform;
