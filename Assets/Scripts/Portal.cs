@@ -20,7 +20,7 @@ public class Portal : MonoBehaviour
 
 
     private void Awake() {
-        renderer = mesh.GetComponent<Renderer>();
+        renderer = GetComponentInChildren<Renderer>();
         material = renderer.material;
     }
 

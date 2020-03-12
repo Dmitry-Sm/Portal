@@ -11,16 +11,17 @@ public class PortalCamera : MonoBehaviour
     [SerializeField]
     private Camera portalCamera;
 
+    private Camera mainCamera;
     private Transform player;
     private RenderTexture tempTexture1;
     private RenderTexture tempTexture2;
     private static int iterations = 4;
-    // private Transform[] cameraTransforms = new Transform[iterations];
 
 
     private void Awake() 
     {
-        player = GetComponent<Camera>().transform;
+        mainCamera = GetComponent<Camera>();
+        player = mainCamera.transform;
         tempTexture1 = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGB32);
         tempTexture2 = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGB32);   
     }
@@ -43,38 +44,22 @@ public class PortalCamera : MonoBehaviour
 
     void RecursiveRenderPortal(Portal inPortal, Portal outPortal)
     {
-        // Transform[] cams = new Transform[iterations];
         Transform prev = portalCamera.transform;
         prev.SetPositionAndRotation(player.position, player.rotation);
 
         Vector3[] pos = new Vector3[iterations];
         Quaternion[] rot = new Quaternion[iterations];
 
-
         for (int i = iterations - 1; i >= 0 ; i--)
         {
             prev = RenderPortal(inPortal, outPortal, prev);
             pos[i] = prev.position;
             rot[i] = prev.rotation;
-            // cams[i].SetPositionAndRotation(prev.position, prev.rotation);
         }
         for (int i = 0; i < iterations; i++)
         {
             float dist = Vector3.Magnitude(pos[i] - outPortal.transform.position);
             portalCamera.transform.SetPositionAndRotation(pos[i], rot[i]);
-            
-            // Vector3 norm = portalCamera.transform.TransformDirection(Vector3.Normalize(outPortal.transform.forward));
-            // Vector3 point = portalCamera.transform.TransformPoint(pos[i] - outPortal.transform.position);
-            // Vector3 norm = new Vector3(0, 0, -1);
-            // Vector3 point = new Vector3(0, 0, -dist);
-            // norm = Vector3.Scale(norm, -Vector3.one);
-            // point = Vector3.Scale(point, -Vector3.one);
-            // Plane plane = new Plane(norm, point);
-            // Vector4 vplane = new Vector4(norm.x, norm.y, norm.z, plane.distance);
-
-            // outPortal.transform.position += outPortal.transform.forward * 0.01f;
-            Vector4 clipPlane = CalculateClipPlane(portalCamera, outPortal.transform);
-            // outPortal.transform.position -= outPortal.transform.forward * 0.01f;
 
             if (i == iterations - 1) {
                 if (inPortal.name == "Portal 1") {
@@ -84,17 +69,24 @@ public class PortalCamera : MonoBehaviour
                     marks[1].position = pos[i];
                 }
             }
-            portalCamera.projectionMatrix = portalCamera.CalculateObliqueMatrix(clipPlane);
+            
+            Vector4 clipPlane = CalculateClipPlane(portalCamera, outPortal.transform);
+            portalCamera.projectionMatrix = mainCamera.CalculateObliqueMatrix(clipPlane);
             portalCamera.Render();
         }
     }
     
+
     // https://qiita.com/tsgcpp/items/3816e4cf188db257df19
     private static Vector4 CalculateClipPlane(Camera camera, Transform clip_plane_transform) 
     {
         Matrix4x4 world_to_camera_matrix = camera.worldToCameraMatrix;
+        
         Vector3 clip_plane_normal = world_to_camera_matrix.MultiplyVector(clip_plane_transform.forward);
         Vector3 clip_plane_arbitary_position = world_to_camera_matrix.MultiplyPoint(clip_plane_transform.position);
+
+        Vector3 norm = camera.transform.TransformVector(clip_plane_transform.forward);
+        Vector3 pos = camera.transform.TransformPoint(clip_plane_transform.position);
 
         return CalculateClipPlane(clip_plane_normal, clip_plane_arbitary_position);
     }
