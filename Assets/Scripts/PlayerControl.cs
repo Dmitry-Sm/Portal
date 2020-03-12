@@ -40,7 +40,7 @@ void Update()
         float raw = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float pich = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
         rotation.x -= pich;
-        rotation.x = Mathf.Clamp(rotation.x, -90, 90);
+        rotation.x = Mathf.Clamp(rotation.x, -85, 85);
         cam.transform.localEulerAngles = Vector3.right * rotation.x;
         transform.eulerAngles += Vector3.up * raw;
     }
