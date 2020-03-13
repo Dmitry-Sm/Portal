@@ -6,7 +6,6 @@ using RenderPipeline = UnityEngine.Rendering.RenderPipeline;
 
 public class Portal : MonoBehaviour
 {
-    public new Camera camera;
     [SerializeField]
     private Portal otherPortal;
     [SerializeField]
@@ -24,22 +23,9 @@ public class Portal : MonoBehaviour
         material = renderer.material;
     }
 
-    void Start()
-    {
-        // portalCamera.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
-        // view.GetComponent<MeshRenderer>().sharedMaterial.mainTexture = portalCamera.targetTexture;
-    }
-
-    void Update()
-    {
-        // RenderPortal(portalCamera, otherPortal, playerCamera);
-
-    }
 
     public void SetTexture(Texture texture)
     {
         material.mainTexture = texture;
     }
-
-
 }

@@ -4,84 +4,54 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField]
-    private Camera cam;
-    [SerializeField]
-    private CharacterController controller;
-
     [Header("Movement settings")]
-    [SerializeField]
-    private float walkingSpeed = 5f;
-    [SerializeField]
-    private float runningSpeed = 9f;
-    [Header("Rotation settings")]
-    [SerializeField]
-    private float mouseSensitivity = 150f;
 
-    private Vector3 rotation = new Vector3(0f, 0f, 0f);
-    private Vector3 speed = new Vector3(0f, 0f, 0f);
+    [SerializeField]
+    private float speed = 6.0f;
+    [SerializeField]
+    private float jumpSpeed = 8.0f;
+    [SerializeField]
+    private float rotateSpeed = 0.8f;
+    [SerializeField]
+    private float gravity = 20.0f;
+
+    [HideInInspector]
+    public CharacterController controller;
+
     private bool isRunning = false;
+    private Transform playerCamera;
+    private Vector3 moveDirection = Vector3.zero;
+
 
     void Start()
     {
         print("Start");
+
+        playerCamera = GetComponentInChildren<Camera>().transform;
+        controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
     }
 
 void Update()
     {
- 
-        Rotate();
-        Move();
-    }
+        transform.Rotate(0, Input.GetAxis("Mouse X") * rotateSpeed, 0);
 
-    void Rotate() 
-    {
-        float raw = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float pich = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
-        rotation.x -= pich;
-        rotation.x = Mathf.Clamp(rotation.x, -85, 85);
-        cam.transform.localEulerAngles = Vector3.right * rotation.x;
-        transform.eulerAngles += Vector3.up * raw;
-    }
-
-    void Move() 
-    {        
-        float forward =  Input.GetAxis("Vertical");
-        float right =  Input.GetAxis("Horizontal");
-
-        Vector3 move = new Vector3(0f, 0f, 0f);
-        float moveSpeed = Time.deltaTime;
-
-        if (Input.GetKey(KeyCode.LeftShift) && controller.isGrounded)
+        playerCamera.Rotate(-Input.GetAxis("Mouse Y") * rotateSpeed, 0, 0);
+        if (playerCamera.localRotation.eulerAngles.y != 0)
         {
-            moveSpeed *= runningSpeed;
-            isRunning = true;
+            playerCamera.Rotate(Input.GetAxis("Mouse Y") * rotateSpeed, 0, 0);
         }
-        else
-        {
-            moveSpeed *= walkingSpeed;
-            isRunning = false;
-        }
-        
+
+        moveDirection = new Vector3(Input.GetAxis("Horizontal") * speed, moveDirection.y, Input.GetAxis("Vertical") * speed);
+        moveDirection = transform.TransformDirection(moveDirection);
+
         if (controller.isGrounded)
         {
-            speed.y = -0.01f;
+            if (Input.GetButton("Jump")) moveDirection.y = jumpSpeed;
+            else moveDirection.y = 0;
         }
-        else 
-        {
-            speed.y -= 0.005f;
-        }
-        
-        if (Input.GetKeyDown(KeyCode.Space) && controller.isGrounded)
-        {
-            speed.y += 0.2f;
-        }
-        
-        move += transform.forward * forward * moveSpeed;
-        move += transform.right * right * moveSpeed;
 
-        move += speed;
-        controller.Move(move);
+        moveDirection.y -= gravity * Time.deltaTime;
+        controller.Move(moveDirection * Time.deltaTime);
     }
 }

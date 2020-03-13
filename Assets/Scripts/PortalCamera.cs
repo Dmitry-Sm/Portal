@@ -7,8 +7,6 @@ public class PortalCamera : MonoBehaviour
     [SerializeField]
     private Portal[] portals = new Portal[2];
     [SerializeField]
-    private Transform[] marks = new Transform[2];
-    [SerializeField]
     private Camera portalCamera;
 
     private Camera mainCamera;
@@ -60,15 +58,6 @@ public class PortalCamera : MonoBehaviour
         {
             float dist = Vector3.Magnitude(pos[i] - outPortal.transform.position);
             portalCamera.transform.SetPositionAndRotation(pos[i], rot[i]);
-
-            if (i == iterations - 1) {
-                if (inPortal.name == "Portal 1") {
-                    marks[0].position = pos[i];
-                }
-                else {
-                    marks[1].position = pos[i];
-                }
-            }
             
             Vector4 clipPlane = CalculateClipPlane(portalCamera, outPortal.transform);
             portalCamera.projectionMatrix = mainCamera.CalculateObliqueMatrix(clipPlane);
