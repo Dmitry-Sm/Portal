@@ -15,6 +15,7 @@ public class PortalCamera : MonoBehaviour
     private RenderTexture tempTexture2;
     private static int iterations = 4;
 
+    private static readonly Quaternion halfTurn = Quaternion.Euler(0.0f, 180.0f, 0.0f);
 
     private void Awake() 
     {
@@ -97,13 +98,13 @@ public class PortalCamera : MonoBehaviour
         Transform cameraTransform = looker;
         
         Vector3 relativePosition = inTransform.InverseTransformPoint(looker.position);
-        relativePosition = Vector3.Scale(relativePosition, new Vector3(-1, 1, -1));
+        relativePosition = halfTurn * relativePosition;
         cameraTransform.position = outTransform.TransformPoint(relativePosition);
 
-        Vector3 relativeRotation = inTransform.InverseTransformDirection(looker.forward);
-        relativeRotation = Vector3.Scale(relativeRotation, new Vector3(-1, 1, -1));
-        cameraTransform.forward = outTransform.TransformDirection(relativeRotation);
-
+        Quaternion relativeRotation = Quaternion.Inverse(inTransform.rotation) * looker.rotation;
+        relativeRotation = outTransform.rotation * halfTurn * relativeRotation;
+        cameraTransform.rotation = relativeRotation;
+        
         return cameraTransform;
     }
 }

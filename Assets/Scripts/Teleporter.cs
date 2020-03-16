@@ -13,12 +13,12 @@ public class Teleporter : MonoBehaviour
     [SerializeField]
     private Transform[] marks = new Transform[2];
 
-    private static Quaternion halfTurn = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+    private static readonly Quaternion halfTurn = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+    private Transform playerCamera;
 
-    // Start is called before the first frame update
     void Start()
     {
-        // playerCamera = player.GetComponentInChildren<Camera>().transform;
+        playerCamera = player.GetComponentInChildren<Camera>().transform;
     }
 
 
@@ -35,36 +35,32 @@ public class Teleporter : MonoBehaviour
 
     private void Teleport(Transform obj)
     {
-        // Position
-        Vector3 relativePosition = transform.InverseTransformPoint(obj.position);
+        Transform inTransform = transform;
+        Transform outTransform = otherPortal;
+        // // Position
+        Vector3 relativePosition = inTransform.InverseTransformPoint(obj.position);
         relativePosition = halfTurn * relativePosition;
+        relativePosition = outTransform.TransformPoint(relativePosition);
 
-        // Rotation
-        Quaternion difference = otherPortal.rotation * 
-            Quaternion.Inverse(transform.rotation) * halfTurn;
-        
         if (obj.name == "Player") 
         {
             player.controller.enabled = false;
-            obj.position = otherPortal.TransformPoint(relativePosition);
-            obj.rotation = difference * obj.rotation;
+            Quaternion relativeRot = Quaternion.Inverse(inTransform.rotation) * playerCamera.rotation;
+            relativeRot = outTransform.rotation * halfTurn * relativeRot;
+
+            player.transform.position = relativePosition;
+            Vector3 a = relativeRot.eulerAngles;
+            
+            player.transform.rotation = Quaternion.Euler(new Vector3(0f, a.y, 0f));
+            playerCamera.localEulerAngles = new Vector3(a.x, 0f, 0f);
             player.controller.enabled = true;
         }
         else
         {
-            obj.position = otherPortal.TransformPoint(relativePosition);
-            obj.rotation = difference * obj.rotation;
+            Quaternion relativeRot = Quaternion.Inverse(inTransform.rotation) * obj.rotation;
+            relativeRot = outTransform.rotation * halfTurn * relativeRot;
+            obj.position = relativePosition;
+            obj.rotation = relativeRot;
         }
-
     }
-    
-    // private void OnTriggerEnter(Collider other)
-    // {
-    //     other.gameObject.layer = 11;
-    // }
-
-    // private void OnTriggerExit(Collider other)
-    // {
-    //     other.gameObject.layer = 9;
-    // }
 }
