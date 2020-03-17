@@ -28,7 +28,6 @@ public class Teleporter : MonoBehaviour
 
         if (zPos < 0) 
         {
-            print("Teleport " + other.name + other.transform.position);
             Teleport(other.transform);
         }
     }
