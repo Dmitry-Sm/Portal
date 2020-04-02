@@ -1,6 +1,11 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using RenderPipeline = UnityEngine.Rendering.RenderPipelineManager;
+
+// namespace UnityEngine.Rendering.LWRP
 
 public class PortalCamera : MonoBehaviour
 {
@@ -13,35 +18,47 @@ public class PortalCamera : MonoBehaviour
     private Transform player;
     private RenderTexture tempTexture1;
     private RenderTexture tempTexture2;
-    private static int iterations = 4;
+    private static int iterations = 2;
 
+    // private CameraData
     private static readonly Quaternion halfTurn = Quaternion.Euler(0.0f, 180.0f, 0.0f);
+
+    private void OnEnable() {
+        RenderPipeline.beginCameraRendering += CaptureCamera;        
+    }
+
+    private void OnDisable() {
+        RenderPipeline.beginCameraRendering -= CaptureCamera;
+    }
 
     private void Awake() 
     {
-        mainCamera = GetComponent<Camera>();
-        player = mainCamera.transform;
         tempTexture1 = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGB32);
         tempTexture2 = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGB32);   
+
+        mainCamera = GetComponent<Camera>();
+        player = mainCamera.transform;
     }
 
 
     private void Start()
     {
+   
+
         portals[0].SetTexture(tempTexture1);
         portals[1].SetTexture(tempTexture2);
     }
 
 
-    private void OnPreRender() {
+    public void CaptureCamera(ScriptableRenderContext context, Camera camportalCameraera) {
         portalCamera.targetTexture = tempTexture1;
-        RecursiveRenderPortal(portals[0], portals[1]);
+        RecursiveRenderPortal(portals[0], portals[1], context);
         portalCamera.targetTexture = tempTexture2;
-        RecursiveRenderPortal(portals[1], portals[0]);
+        RecursiveRenderPortal(portals[1], portals[0], context);
     }
 
 
-    void RecursiveRenderPortal(Portal inPortal, Portal outPortal)
+    void RecursiveRenderPortal(Portal inPortal, Portal outPortal, ScriptableRenderContext context)
     {
         Transform prev = portalCamera.transform;
         prev.SetPositionAndRotation(player.position, player.rotation);
@@ -62,7 +79,8 @@ public class PortalCamera : MonoBehaviour
             
             Vector4 clipPlane = CalculateClipPlane(portalCamera, outPortal.transform);
             portalCamera.projectionMatrix = mainCamera.CalculateObliqueMatrix(clipPlane);
-            portalCamera.Render();
+            // portalCamera.Render();
+            UniversalRenderPipeline.RenderSingleCamera(context, portalCamera);
         }
     }
     
