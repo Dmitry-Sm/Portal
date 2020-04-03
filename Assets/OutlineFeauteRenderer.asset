@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-1070917861931399481
+--- !u!114 &-3934070059981459667
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12,20 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 503e2f120c4592f499eb4ff947231e2b, type: 3}
   m_Name: NewOutlineFeature
   m_EditorClassIdentifier: 
-  _renderPassEvent: 450
-  _outlineMaterial: {fileID: 2100000, guid: 47a7e186cd7ef4348b39717c05ed3cbc, type: 2}
-  _renderTextureName: _OutlineRenderTexture
-  _bluredTextureName: _OutlineBluredTexture
+  _renderPassEvent: 0
+  _outlineMaterial: {fileID: 2100000, guid: b8490f39d04637245a981de35cc14f5f, type: 2}
+  _renderTextureName: 1
+  _bluredTextureName: 2
   _renderSettings:
-    OverrideMaterial: {fileID: 2100000, guid: da798bab47538cf44b13ebdade82295b, type: 2}
+    OverrideMaterial: {fileID: 2100000, guid: b8490f39d04637245a981de35cc14f5f, type: 2}
     OverrideMaterialPassIndex: 0
     LayerMask:
       serializedVersion: 2
       m_Bits: 4096
   _blurSettings:
-    BlurMaterial: {fileID: 2100000, guid: 52ddf6385ab3df8478532cef24fac91d, type: 2}
+    BlurMaterial: {fileID: 2100000, guid: 8ea8163e66d4e7a47921b951258d229f, type: 2}
     DownSample: 1
-    PassesCount: 4
+    PassesCount: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: OutlineFeauteRenderer
   m_EditorClassIdentifier: 
   m_RendererFeatures:
-  - {fileID: -1070917861931399481}
+  - {fileID: -3934070059981459667}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
