@@ -18,6 +18,8 @@ public class PlayerControl : MonoBehaviour
     [HideInInspector]
     public CharacterController controller;
 
+    private PlayerAnimation _anim;
+
     private bool isRunning = false;
     private Transform playerCamera;
     private Vector3 moveDirection = Vector3.zero;
@@ -29,6 +31,7 @@ public class PlayerControl : MonoBehaviour
 
         playerCamera = GetComponentInChildren<Camera>().transform;
         controller = GetComponent<CharacterController>();
+        _anim = GetComponent<PlayerAnimation>();
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -42,7 +45,10 @@ void Update()
             playerCamera.Rotate(Input.GetAxis("Mouse Y") * rotateSpeed, 0, 0);
         }
 
-        moveDirection = new Vector3(Input.GetAxis("Horizontal") * speed, moveDirection.y, Input.GetAxis("Vertical") * speed);
+        moveDirection.x = Input.GetAxis("Horizontal") * speed;
+        moveDirection.z = Input.GetAxis("Vertical") * speed;
+        _anim.Move(Mathf.Abs(moveDirection.x) + Mathf.Abs(moveDirection.z));
+        // moveDirection = new Vector3(Input.GetAxis("Horizontal") * speed, moveDirection.y, Input.GetAxis("Vertical") * speed);
         moveDirection = transform.TransformDirection(moveDirection);
 
         if (controller.isGrounded)
