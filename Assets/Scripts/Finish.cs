@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class Finish : MonoBehaviour
 {
+    
+    public delegate void OnFinish();
+    public event OnFinish finishEvent;
+
 
     private void OnTriggerEnter(Collider other) {
-        if (other.tag == "Player")
-        {
-            Level.Finish();
-        }
+        print("Collision enter");
+        finishEvent?.Invoke();
     }
 }

@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Level : MonoBehaviour
 {
-    public void Start() {
+    [SerializeField] private Finish finish;
 
+    private void Start() {
+        finish.finishEvent += OnFinish;
     }
-
-    public static void Finish() {
-        print("Finish");
+    
+    public void OnFinish() {
+        SceneManager.LoadScene("Main menu");
     }
 }

@@ -8,26 +8,27 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] GameObject MainMenuPanel;
     [SerializeField] GameObject LevelListPanel;
+    [SerializeField] Object[] levels;
 
-    // private void Start() {
-    //     MainMenuPanel = this.transform.GetChild()
-    // }
+    private void Start() {
+        Cursor.lockState = CursorLockMode.None;
+    }
 
-    public void MainMenuToLevelListButton()
+    public void ShowLevelList()
     {
         MainMenuPanel.SetActive(false);
         LevelListPanel.SetActive(true);
     }
 
-    public void LevelListToMainMenuButton()
+    public void ShowMainMenu()
     {
         MainMenuPanel.SetActive(true);
         LevelListPanel.SetActive(false);
     }
 
-    public void LevelButton(int levelNum)
+    public void LevelButton(int num)
     {
-        SceneManager.LoadScene("Level_01");
+        SceneManager.LoadScene(levels[num].name);
     }
 
     public void QuitButton()

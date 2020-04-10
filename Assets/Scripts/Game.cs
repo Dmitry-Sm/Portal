@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        Level level = new Level();
+    private Level level;
+
+    private void Awake() {
+        
     }
 }

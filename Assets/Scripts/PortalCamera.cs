@@ -18,7 +18,7 @@ public class PortalCamera : MonoBehaviour
     private Transform player;
     private RenderTexture tempTexture1;
     private RenderTexture tempTexture2;
-    private static int iterations = 2;
+    private static int iterations = 4;
 
     // private CameraData
     private static readonly Quaternion halfTurn = Quaternion.Euler(0.0f, 180.0f, 0.0f);
